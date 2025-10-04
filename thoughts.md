@@ -215,3 +215,123 @@ This architecture balances user experience, performance, and maintainability whi
 - Session timeout handling
 
 This creates a cohesive user journey from authentication through to discovering cashback opportunities on the map screen.
+
+## Component Architecture & Reusability
+
+### Component Breakdown Strategy
+I've refactored the application to follow a modular, reusable component architecture:
+
+**Map Screen Components**:
+```
+components/map/
+├── mapView.tsx           # Main map with custom markers
+├── searchAndFilters.tsx  # Search bar and filter components  
+├── merchantBottomSheet.tsx # Merchant details slide-up
+└── resultsCounter.tsx    # Results count indicator
+```
+
+**UI System Components**:
+```
+components/ui/
+├── typography.tsx        # Typography system with font variants
+├── button.tsx           # Reusable button component
+├── card.tsx             # Card container component
+└── icon-symbol.tsx      # Existing icon system
+```
+
+**Authentication Components** (already componentized):
+```
+components/
+├── authView.tsx         # Main auth wrapper
+├── authBranding.tsx     # Logo and branding
+├── authToggle.tsx       # Login/Signup switcher
+├── forms/               # Form input components
+├── dashboardView.tsx    # Dashboard wrapper
+├── dashBoardHeader.tsx  # Dashboard header
+├── quickActions.tsx     # Action cards
+└── recentActivity.tsx   # Activity list
+```
+
+### Typography & Font System
+
+**Font Implementation**:
+- **Platform-Adaptive**: Uses SF Pro on iOS, optimized Android fonts on Android
+- **Semantic Variants**: h1-h6, body, caption, button, brand variants
+- **Weight System**: regular, medium, semiBold, bold weights
+- **Number Font**: Monospace for better number alignment
+- **Accessibility**: Proper line heights and contrast ratios
+
+**Typography Components**:
+- `<Typography>` - Main text component with variant system
+- `<Heading1>`, `<Heading2>`, etc. - Convenience components
+- `<BodyText>`, `<Caption>` - Common text variants
+- `<ButtonText>`, `<BrandText>` - Specialized variants
+- `<NumberText>` - Monospace numbers for dashboards
+
+**Font Loading**:
+- Implemented in root `_layout.tsx` with splash screen management
+- Graceful fallbacks to system fonts
+- Cross-platform font family mapping
+
+### Benefits of This Architecture
+
+**Developer Experience**:
+1. **Consistent Design**: Typography system ensures visual consistency
+2. **Reusable Components**: DRY principle reduces code duplication
+3. **Easy Maintenance**: Changes to UI elements affect entire app
+4. **Type Safety**: TypeScript interfaces for all component props
+5. **Scalability**: Easy to add new variants and components
+
+**Performance Benefits**:
+1. **Code Splitting**: Components loaded as needed
+2. **Optimized Renders**: Memoization in complex components
+3. **Font Optimization**: Platform-specific font loading
+4. **Bundle Size**: Modular imports reduce unused code
+
+**Design System Advantages**:
+1. **Brand Consistency**: Centralized color, spacing, typography
+2. **Responsive Design**: Components adapt to different screen sizes
+3. **Accessibility**: Built-in accessibility patterns
+4. **Theme Support**: Easy to implement dark mode later
+
+### Component Usage Examples
+
+```tsx
+// Typography variants
+<Heading1 color="#333">Welcome to Budj</Heading1>
+<BodyText>Find cashback offers near you</BodyText>
+<Caption color="#666">2.5km away</Caption>
+<NumberText>KES 2,450</NumberText>
+
+// Interactive components
+<Button 
+  title="Explore Map" 
+  variant="primary" 
+  size="large" 
+  onPress={handleExplore} 
+/>
+
+// Layout components
+<Card shadow padding="large">
+  <Heading3>Your Cashback</Heading3>
+  <NumberText>KES 2,450</NumberText>
+</Card>
+```
+
+### Future Component Enhancements
+
+**Planned Additions**:
+1. **Form Components**: Input, Select, Checkbox with consistent styling
+2. **Navigation Components**: Tab bars, headers with brand fonts
+3. **Data Display**: Charts, tables with number fonts
+4. **Feedback Components**: Toasts, alerts, loading states
+5. **Media Components**: Optimized images, avatars, galleries
+
+**Design System Evolution**:
+1. **Theme Provider**: Light/dark mode support
+2. **Spacing System**: Consistent margins, paddings
+3. **Color Palette**: Brand colors, semantic colors
+4. **Animation Library**: Consistent micro-interactions
+5. **Responsive Breakpoints**: Mobile, tablet, desktop support
+
+This architecture provides a solid foundation for scaling the Budj app while maintaining excellent user experience and developer productivity.
