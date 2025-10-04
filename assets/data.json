@@ -1,0 +1,243 @@
+[
+    {
+        "id": "10",
+        "name": "Carrefour Supermarket",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=9GcRZ_Pi4IijOpZ9aEL4EJl5oXez5zxmYatTQAw&s",
+        "category": "shop",
+        "street": "Muindi Mbingu",
+        "distance": "1.6",
+        "status": "Open",
+        "rating": 4.4,
+        "exclusive": true,
+        "offersLeft": 20,
+        "offerEnd": "2025-05-20T23:59:59.999Z",
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "8",
+                "upto": "2000"
+            }
+        ],
+        "latitude": -1.285,
+        "longitude": 36.8175,
+        "imageUrl": "https://nnmedia.nation.africa/uploads/2021/04/Carrefour.jpg",
+        "blurhash": "LBH2A?N34mIA00tnkQxcEYM~t0s="
+    },
+    {
+        "id": "1",
+        "name": "Java House Kimathi",
+        "logo": "https://yt3.googleusercontent.com/vi__BEWd694CgYrmbyNB_Ho0u7QPOwbWpurl7zPKmDVPeXToOCqStIu3w4GTkpksq9MH7rYvYQ=s900-fff-no-rj",
+        "category": "restaurant",
+        "street": "Kimathi Street Old Mutual",
+        "distance": "0.8",
+        "status": "Open",
+        "rating": 4.5,
+        "exclusive": true,
+        "offersLeft": null,
+        "offerEnd": "2025-05-20T23:59:59.999Z",
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "5",
+                "upto": "500"
+            }
+        ],
+        "latitude": -1.2841,
+        "longitude": 36.8227,
+        "imageUrl": "https://dailycoffeenews.com/wp-content/uploads/2017/07/airobi.jpg"
+    },
+    {
+        "id": "2",
+        "name": "Artcaffe Kenyatta Avenue",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUmV3T7iIVLt1fJMz5i_HXME2fOOyFPnY5Uw&s",
+        "logoBlurhash": "LOS6Plt7%MayWBofWBay~qWBM{of",
+        "category": "restaurant",
+        "street": "Koinange Street",
+        "distance": "1.2",
+        "status": "closed",
+        "rating": 4.3,
+        "exclusive": false,
+        "offersLeft": 2,
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "12",
+                "upto": "1200"
+            },
+            {
+                "type": "points",
+                "value": "",
+                "upto": "700"
+            }
+        ],
+        "latitude": -1.2847,
+        "longitude": 36.8202,
+        "imageUrl": "https://www.artcaffe.co.ke/images/Artlife/Artcaffe-Britam-7.webp",
+        "blurhash": "LIF6H_9r%3o#02wPM{of~U9ZspWB"
+    },
+    {
+        "id": "3",
+        "name": "Text Book Centre",
+        "logo": null,
+        "category": "shop",
+        "street": "Moi Avenue",
+        "distance": "0.5",
+        "status": "Open",
+        "rating": 4.2,
+        "exclusive": false,
+        "offersLeft": 3,
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "4",
+                "upto": "1000"
+            }
+        ],
+        "latitude": -1.2853,
+        "longitude": 36.8237,
+        "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzGa3a0b8KsY1JUN-TvbUj0SpcJCFjzi2r0g&s",
+        "blurhash": "LZL:u^x[NqbWt.r=aKbc~CRQaMRo"
+    },
+    {
+        "id": "4",
+        "name": "Tusker House Restaurant",
+        "logo": "https://www.malindikenya.net/images/uploads/articoli/1356_l.jpg",
+        "logoBlurhash": "LxPZopoL_4flRjoLofWC-=azM_oe",
+        "category": "restaurant",
+        "street": "Tom Mboya St",
+        "distance": "0.9",
+        "status": "closed",
+        "rating": 4.0,
+        "exclusive": false,
+        "offersLeft": 8,
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "10",
+                "upto": "800"
+            }
+        ],
+        "latitude": -1.2866,
+        "longitude": 36.8241,
+        "imageUrl": null
+    },
+    {
+        "id": "5",
+        "name": "Nairobi Fitness Centre",
+        "logo": null,
+        "category": "fitness",
+        "street": "Standard Street",
+        "distance": "1.7",
+        "status": "Open",
+        "rating": 4.1,
+        "exclusive": false,
+        "offers": [
+            {
+                "type": "points",
+                "value": "",
+                "upto": "500"
+            }
+        ],
+        "latitude": -1.2877,
+        "longitude": 36.8216,
+        "imageUrl": null
+    },
+    {
+        "id": "6",
+        "name": "Kilimanjaro Jamia",
+        "logo": null,
+        "category": "restaurant",
+        "street": "Kimathi Street",
+        "distance": "0.6",
+        "status": "closed",
+        "rating": 4.4,
+        "exclusive": false,
+        "offers": [
+            {
+                "type": "points",
+                "value": "",
+                "upto": "700"
+            }
+        ],
+        "latitude": -1.2844,
+        "longitude": 36.8245,
+        "imageUrl": null
+    },
+    {
+        "id": "7",
+        "name": "Naivas Supermarket",
+        "logo": null,
+        "category": "shop",
+        "street": "Moi Avenue",
+        "distance": "1.3",
+        "status": "Open",
+        "rating": 4.2,
+        "exclusive": false,
+        "offers": [
+            {
+                "type": "points",
+                "value": "",
+                "upto": "500"
+            }
+        ],
+        "latitude": -1.283,
+        "longitude": 36.822,
+        "imageUrl": null
+    },
+    {
+        "id": "8",
+        "name": "KFC City Square",
+        "logo": null,
+        "category": "restaurant",
+        "street": "City Hall Way",
+        "distance": "0.4",
+        "status": "Open",
+        "rating": 4.3,
+        "exclusive": true,
+        "offersLeft": 15,
+        "offerEnd": "2025-05-15T23:59:59.999Z",
+        "offers": [
+            {
+                "type": "points",
+                "value": "15",
+                "upto": ""
+            },
+            {
+                "type": "cashback",
+                "value": "15",
+                "upto": "1000"
+            }
+        ],
+        "latitude": -1.2894,
+        "longitude": 36.8206,
+        "imageUrl": null
+    },
+    {
+        "id": "9",
+        "name": "Alliance Française",
+        "logo": null,
+        "category": "arts",
+        "street": "Loita Street",
+        "distance": "1.1",
+        "status": "Open",
+        "rating": 4.6,
+        "exclusive": true,
+        "offersLeft": 8,
+        "offerEnd": "2025-05-15T23:59:59.999Z",
+        "offers": [
+            {
+                "type": "cashback",
+                "value": "12",
+                "upto": "1200"
+            },
+            {
+                "type": "points",
+                "value": "20",
+                "upto": "1500"
+            }
+        ],
+        "latitude": -1.287,
+        "longitude": 36.819,
+        "imageUrl": null
+    }
+]
