@@ -170,3 +170,48 @@ MapScreen/
 **Solution**: Viewport-based rendering, image optimization, efficient state updates
 
 This architecture balances user experience, performance, and maintainability while providing a solid foundation for future enhancements.
+
+## Authentication & Home Screen Design
+
+### Login/Signup Implementation
+**Design Philosophy**: Seamless onboarding with immediate value demonstration
+
+**Key Features**:
+- **Unified Auth Interface**: Single screen with toggleable login/signup modes
+- **Simulated Authentication**: Accepts any credentials for demo purposes
+- **Persistent Sessions**: Uses AsyncStorage to maintain login state
+- **Loading States**: Realistic loading animations and feedback
+- **Haptic Feedback**: Tactile responses for all interactions
+
+**User Experience Flow**:
+1. **Landing**: Branded welcome screen with clear value proposition
+2. **Authentication**: Simple form with visual feedback
+3. **Dashboard**: Personalized home screen showing user value immediately
+
+### Dashboard Features
+**Information Architecture**:
+- **Personal Greeting**: Welcoming user by name
+- **Key Metrics**: Total cashback and points prominently displayed
+- **Quick Actions**: Direct access to main app features
+- **Recent Activity**: Contextual user engagement
+- **Call-to-Action**: Drives users to explore the map
+
+**Visual Design Principles**:
+- **Card-based Layout**: Modern, scannable information hierarchy
+- **Color-coded Categories**: Consistent visual language with map screen
+- **Accessible Design**: High contrast, readable typography
+- **Smooth Animations**: Polished micro-interactions
+
+### Technical Implementation
+**State Management**: Local state with AsyncStorage persistence
+**Animation Strategy**: Smooth transitions using React Native Animated API
+**Form Handling**: Real-time validation with visual feedback
+**Error Handling**: Graceful fallbacks with user-friendly messages
+
+**Security Considerations** (for production):
+- Input sanitization and validation
+- Secure token storage (Keychain/Keystore)
+- Biometric authentication support
+- Session timeout handling
+
+This creates a cohesive user journey from authentication through to discovering cashback opportunities on the map screen.

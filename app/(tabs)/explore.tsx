@@ -82,7 +82,7 @@ const getCategoryColor = (category: string, exclusive?: boolean) => {
 };
 
 export default function MapScreen() {
-  const [merchants] = useState<Merchant[]>(merchantData);
+  const [merchants] = useState<Merchant[]>(merchantData as Merchant[]);
   const [selectedMerchant, setSelectedMerchant] = useState<Merchant | null>(
     null
   );
