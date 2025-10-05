@@ -8,12 +8,12 @@ import "react-native-reanimated";
 
 import { customFonts } from "@/constants/fonts";
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import '../globals.css'
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -23,7 +23,6 @@ export default function RootLayout() {
   useEffect(() => {
     async function loadFonts() {
       try {
-        // Load custom fonts if any are defined
         const fontKeys = Object.keys(customFonts);
         if (fontKeys.length > 0) {
           await Font.loadAsync(customFonts);

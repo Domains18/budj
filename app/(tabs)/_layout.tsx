@@ -3,36 +3,62 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { colors } from "@/constants/theme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 100,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "500",
+          marginTop: 4,
+        },
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="explore"
         options={{
-          title: "Home",
+          title: "Find Offers",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={24} name="magnifyingglass" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="history"
         options={{
-          title: "Map",
+          title: "My History",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="map.fill" color={color} />
+            <IconSymbol size={24} name="clock.fill" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="earn-more"
+        options={{
+          title: "Earn More",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="star.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

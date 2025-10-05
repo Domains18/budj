@@ -1,30 +1,20 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import * as Haptics from "expo-haptics";
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect, useMemo, useState } from "react";
+import { Animated, StatusBar, StyleSheet, View } from "react-native";
 
 import merchantData from "@/assets/data.json";
 import { MapViewComponent } from "@/components/map/mapView";
-import { MerchantBottomSheet } from "@/components/map/merchantBottomSheet";
-import { ResultsCounter } from "@/components/map/resultsCounter";
-import {
-  FilterChips,
-  FilterPanel,
-  SearchHeader,
-} from "@/components/map/searchAndFilters";
 import { Sidebar } from "@/components/sidebar";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { BudjHeader } from "@/components/ui/budj-header";
+import { FilterPills } from "@/components/ui/filter-pills";
+import {
+  MerchantCards,
+  type Merchant as MerchantCardType,
+} from "@/components/ui/merchant-cards";
+import { StoreDetailsBottomSheet } from "@/components/ui/store-details-bottom-sheet";
+import { colors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
-
-const { height } = Dimensions.get("window");
 
 interface Merchant {
   id: string;
@@ -49,31 +39,21 @@ interface Merchant {
   blurhash?: string;
 }
 
-interface Filters {
-  categories: string[];
-  offerTypes: string[];
-  searchQuery: string;
-}
-
 export default function MapScreen() {
-  const { userData, isLoggedIn, checkLoginStatus } = useAuth();
-  const [merchants] = useState<Merchant[]>(merchantData as Merchant[]);
   const [selectedMerchant, setSelectedMerchant] = useState<Merchant | null>(
     null
   );
-  const [showFilters, setShowFilters] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
-    categories: [],
-    offerTypes: [],
-    searchQuery: "",
-  });
-
-  const slideAnimation = useState(new Animated.Value(height))[0];
-  const filterAnimation = useState(new Animated.Value(0))[0];
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+  const [merchants] = useState<Merchant[]>(merchantData as Merchant[]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+    "all",
+  ]);
+  const [selectedOfferTypes, setSelectedOfferTypes] = useState<string[]>([]);
   const sidebarAnimation = useState(new Animated.Value(0))[0];
+  const { isLoggedIn, userData, checkLoginStatus } = useAuth();
 
-  // Check authentication status on mount
   useEffect(() => {
     checkLoginStatus();
   }, [checkLoginStatus]);
@@ -85,232 +65,195 @@ export default function MapScreen() {
     longitudeDelta: 0.0421,
   };
 
-  const filteredMerchants = useMemo(() => {
-    return merchants.filter((merchant) => {
-      const categoryMatch =
-        filters.categories.length === 0 ||
-        filters.categories.includes(merchant.category) ||
-        filters.categories.includes("all");
+  const handleMarkerPress = (merchant: Merchant) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedMerchant(merchant);
+  };
 
-      const offerTypeMatch =
-        filters.offerTypes.length === 0 ||
-        filters.offerTypes.some((filterType) => {
-          if (filterType === "exclusive") return merchant.exclusive;
-          return merchant.offers.some((offer) => offer.type === filterType);
-        });
+  const handleMerchantSelect = (merchant: MerchantCardType) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      const searchMatch =
-        filters.searchQuery === "" ||
-        merchant.name
-          .toLowerCase()
-          .includes(filters.searchQuery.toLowerCase()) ||
-        merchant.street
-          .toLowerCase()
-          .includes(filters.searchQuery.toLowerCase());
-
-      return categoryMatch && offerTypeMatch && searchMatch;
-    });
-  }, [merchants, filters]);
-
-  useEffect(() => {
-    loadSavedFilters();
-  }, []);
-
-  useEffect(() => {
-    const saveFiltersAsync = async () => {
-      try {
-        await AsyncStorage.setItem("budj_filters", JSON.stringify(filters));
-      } catch (error) {
-        console.log("Error saving filters:", error);
-      }
-    };
-    saveFiltersAsync();
-  }, [filters]);
-
-  const loadSavedFilters = async () => {
-    try {
-      const saved = await AsyncStorage.getItem("budj_filters");
-      if (saved) {
-        const parsedFilters = JSON.parse(saved);
-        setFilters(parsedFilters);
-      }
-    } catch (error) {
-      console.log("Error loading filters:", error);
+    const fullMerchant = merchants.find((m) => m.id === merchant.id);
+    if (fullMerchant) {
+      setSelectedMerchant(fullMerchant);
     }
   };
 
-  const handleMarkerPress = (merchant: Merchant) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleSwipeUp = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsBottomSheetVisible(true);
+  };
+
+  const handleBottomSheetClose = () => {
+    setIsBottomSheetVisible(false);
+  };
+
+  const handleBottomSheetMerchantPress = (merchant: Merchant) => {
     setSelectedMerchant(merchant);
-    Animated.spring(slideAnimation, {
-      toValue: height * 0.3,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start();
+    // Optionally close the bottom sheet when a merchant is selected
+    // setIsBottomSheetVisible(false);
   };
 
-  const closeMerchantDetails = () => {
-    Animated.spring(slideAnimation, {
-      toValue: height,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start(() => {
-      setSelectedMerchant(null);
-    });
-  };
-
-  const toggleFilters = () => {
-    const toValue = showFilters ? 0 : 1;
-    setShowFilters(!showFilters);
-
-    Animated.spring(filterAnimation, {
-      toValue,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start();
-  };
-
-  const toggleCategoryFilter = (categoryId: string) => {
+  const handleCategoryToggle = (categoryId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if (categoryId === "all") {
-      setFilters((prev) => ({
-        ...prev,
-        categories: prev.categories.includes("all") ? [] : ["all"],
-      }));
+      setSelectedCategories(["all"]);
     } else {
-      setFilters((prev) => ({
-        ...prev,
-        categories: prev.categories.includes(categoryId)
-          ? prev.categories.filter((id) => id !== categoryId && id !== "all")
-          : [...prev.categories.filter((id) => id !== "all"), categoryId],
-      }));
+      setSelectedCategories((prev) => {
+        const filtered = prev.filter((id) => id !== "all");
+        if (filtered.includes(categoryId)) {
+          const newSelection = filtered.filter((id) => id !== categoryId);
+          return newSelection.length === 0 ? ["all"] : newSelection;
+        }
+        return [...filtered, categoryId];
+      });
     }
   };
 
-  const toggleOfferTypeFilter = (offerTypeId: string) => {
+  const handleOfferTypeToggle = (offerTypeId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    setFilters((prev) => ({
-      ...prev,
-      offerTypes: prev.offerTypes.includes(offerTypeId)
-        ? prev.offerTypes.filter((id) => id !== offerTypeId)
-        : [...prev.offerTypes, offerTypeId],
-    }));
-  };
-
-  const clearAllFilters = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setFilters({
-      categories: [],
-      offerTypes: [],
-      searchQuery: "",
+    setSelectedOfferTypes((prev) => {
+      if (prev.includes(offerTypeId)) {
+        return prev.filter((id) => id !== offerTypeId);
+      }
+      return [...prev, offerTypeId];
     });
   };
 
-  const handleSearchChange = (text: string) => {
-    setFilters((prev) => ({ ...prev, searchQuery: text }));
-  };
-
   const toggleSidebar = () => {
-    const toValue = showSidebar ? 0 : 1;
-    setShowSidebar(!showSidebar);
+    const isOpening = !isSidebarVisible;
+    setIsSidebarVisible(isOpening);
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     Animated.spring(sidebarAnimation, {
-      toValue,
-      useNativeDriver: true,
+      toValue: isOpening ? 1 : 0,
+      useNativeDriver: false,
       tension: 100,
       friction: 8,
     }).start();
   };
 
   const closeSidebar = () => {
+    setIsSidebarVisible(false);
     Animated.spring(sidebarAnimation, {
       toValue: 0,
-      useNativeDriver: true,
+      useNativeDriver: false,
       tension: 100,
       friction: 8,
-    }).start(() => {
-      setShowSidebar(false);
-    });
+    }).start();
   };
 
-  // Show loading screen if not authenticated
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+  };
+
+  const categoryFilters = [
+    { id: "all", label: "All" },
+    { id: "shop", label: "shop" },
+    { id: "restaurant", label: "restaurant" },
+    { id: "fitness", label: "fitness" },
+  ];
+
+  const offerTypeFilters = [
+    { id: "cashback", label: "Cashback" },
+    { id: "exclusive", label: "Exclusive" },
+    { id: "points", label: "Points" },
+  ];
+
+  const filteredMerchants = useMemo(() => {
+    return merchants.filter((merchant) => {
+      const categoryMatch =
+        selectedCategories.includes("all") ||
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(merchant.category);
+
+      const offerTypeMatch =
+        selectedOfferTypes.length === 0 ||
+        selectedOfferTypes.some((filterType) => {
+          if (filterType === "exclusive") return merchant.exclusive;
+          if (filterType === "cashback") {
+            return merchant.offers.some((o) => o.type === "cashback");
+          }
+          if (filterType === "points") {
+            return merchant.offers.some((o) => o.type === "points");
+          }
+          return false;
+        });
+
+      const searchMatch =
+        searchQuery === "" ||
+        merchant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        merchant.street.toLowerCase().includes(searchQuery.toLowerCase());
+      return categoryMatch && offerTypeMatch && searchMatch;
+    });
+  }, [merchants, selectedCategories, selectedOfferTypes, searchQuery]);
+
   if (!isLoggedIn || !userData) {
     return (
-      <View style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <View style={[styles.container, styles.centered]}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.background}
+        />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
 
-      {/* Map */}
-      <MapViewComponent
+      {/* Budj Header */}
+      <BudjHeader
+        onMenuPress={toggleSidebar}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        walletBalance="KES 2,031"
+      />
+
+      {/* Filter Pills */}
+      <FilterPills
+        categoryFilters={categoryFilters}
+        offerTypeFilters={offerTypeFilters}
+        selectedCategories={selectedCategories}
+        selectedOfferTypes={selectedOfferTypes}
+        onCategoryToggle={handleCategoryToggle}
+        onOfferTypeToggle={handleOfferTypeToggle}
+      />
+
+      {/* Map View */}
+      <View style={styles.mapContainer}>
+        <MapViewComponent
+          merchants={filteredMerchants}
+          onMarkerPress={handleMarkerPress}
+          initialRegion={initialRegion}
+        />
+      </View>
+
+      {/* Merchant Cards at Bottom */}
+      <MerchantCards
         merchants={filteredMerchants}
-        onMarkerPress={handleMarkerPress}
-        initialRegion={initialRegion}
+        onMerchantPress={handleMerchantSelect}
+        onSwipeUp={handleSwipeUp}
       />
-
-      {/* Header with Search and Filter */}
-      <SafeAreaView style={styles.header}>
-        <View style={styles.headerRow}>
-          <View style={styles.searchContainer}>
-            <SearchHeader
-              filters={filters}
-              showFilters={showFilters}
-              onSearchChange={handleSearchChange}
-              onToggleFilters={toggleFilters}
-            />
-          </View>
-
-          {/* Sidebar Toggle Button */}
-          <TouchableOpacity
-            style={styles.sidebarButton}
-            onPress={toggleSidebar}
-            activeOpacity={0.7}
-          >
-            <IconSymbol name="line.3.horizontal" size={20} color="#6B7280" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Category Filter Chips */}
-        <FilterChips
-          filters={filters}
-          onCategoryToggle={toggleCategoryFilter}
-        />
-
-        {/* Advanced Filters Panel */}
-        <FilterPanel
-          filters={filters}
-          filterAnimation={filterAnimation}
-          onOfferTypeToggle={toggleOfferTypeFilter}
-          onClearFilters={clearAllFilters}
-        />
-      </SafeAreaView>
-
-      {/* Merchant Details Bottom Sheet */}
-      <MerchantBottomSheet
-        merchant={selectedMerchant}
-        slideAnimation={slideAnimation}
-        onClose={closeMerchantDetails}
-      />
-
-      {/* Results Count */}
-      <ResultsCounter count={filteredMerchants.length} />
 
       {/* Sidebar */}
       <Sidebar
-        isVisible={showSidebar}
+        isVisible={isSidebarVisible}
         onClose={closeSidebar}
         slideAnimation={sidebarAnimation}
-        userName={userData?.name || "User"}
+        userName={userData.name}
+      />
+
+      {/* Store Details Bottom Sheet */}
+      <StoreDetailsBottomSheet
+        isVisible={isBottomSheetVisible}
+        merchants={filteredMerchants}
+        onClose={handleBottomSheetClose}
+        onMerchantPress={handleBottomSheetMerchantPress}
       />
     </View>
   );
@@ -319,42 +262,13 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
-  header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    backdropFilter: "blur(10px)",
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    zIndex: 1000,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  searchContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  sidebarButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#fff",
-    alignItems: "center",
+  centered: {
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    alignItems: "center",
+  },
+  mapContainer: {
+    flex: 1,
   },
 });

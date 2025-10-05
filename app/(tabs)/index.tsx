@@ -1,9 +1,10 @@
-import { AuthView } from "@/components/authView";
+import { AuthView } from "@/components/ui/auth-view";
+import { colors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import '../../globals.css'
 
 export default function HomeScreen() {
   const { isLoggedIn, userData, checkLoginStatus } = useAuth();
@@ -13,7 +14,6 @@ export default function HomeScreen() {
   }, [checkLoginStatus]);
 
   useEffect(() => {
-    // Redirect to map screen after successful authentication
     if (isLoggedIn && userData) {
       router.replace("/explore");
     }
@@ -21,10 +21,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <SafeAreaView style={styles.safeArea}>
-        <AuthView />
-      </SafeAreaView>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <AuthView />
     </View>
   );
 }
@@ -32,10 +30,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background,
   },
 });

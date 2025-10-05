@@ -1,8 +1,10 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/components/ui/typography';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { lightMapStyle } from "@/constants/map-styles";
+import { colors } from "@/constants/theme";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 interface Merchant {
   id: string;
@@ -17,7 +19,7 @@ interface Merchant {
   offersLeft?: number;
   offerEnd?: string;
   offers: {
-    type: 'cashback' | 'points';
+    type: "cashback" | "points";
     value: string;
     upto: string;
   }[];
@@ -39,36 +41,48 @@ interface MapViewComponentProps {
 }
 
 const getCategoryColor = (category: string, exclusive?: boolean) => {
-  if (exclusive) return '#FFD700'; // Gold for exclusive
-  
+  if (exclusive) return colors.mapMarkerSelected; // Gold for exclusive
+
   switch (category) {
-    case 'restaurant': return '#FF6B6B';
-    case 'shop': return '#4ECDC4';
-    case 'fitness': return '#45B7D1';
-    case 'arts': return '#96CEB4';
-    default: return '#95E1D3';
+    case "restaurant":
+      return colors.primary;
+    case "shop":
+      return colors.primaryLight;
+    case "fitness":
+      return colors.primaryDark;
+    case "arts":
+      return colors.primary;
+    default:
+      return colors.mapMarker;
   }
 };
 
 const getOfferDisplayText = (merchant: Merchant) => {
-  const cashbackOffer = merchant.offers.find(offer => offer.type === 'cashback');
-  const pointsOffer = merchant.offers.find(offer => offer.type === 'points');
-  
+  const cashbackOffer = merchant.offers.find(
+    (offer) => offer.type === "cashback"
+  );
+  const pointsOffer = merchant.offers.find((offer) => offer.type === "points");
+
   if (cashbackOffer) {
     return `${cashbackOffer.value}% back`;
   }
   if (pointsOffer) {
-    return `${pointsOffer.value || 'Earn'} pts`;
+    return `${pointsOffer.value || "Earn"} pts`;
   }
-  return 'Offers';
+  return "Offers";
 };
 
-export function MapViewComponent({ merchants, onMarkerPress, initialRegion }: MapViewComponentProps) {
+export function MapViewComponent({
+  merchants,
+  onMarkerPress,
+  initialRegion,
+}: MapViewComponentProps) {
   return (
     <MapView
       provider={PROVIDER_GOOGLE}
       style={styles.map}
       initialRegion={initialRegion}
+      customMapStyle={lightMapStyle}
       showsUserLocation={true}
       showsMyLocationButton={false}
       toolbarEnabled={false}
@@ -82,10 +96,17 @@ export function MapViewComponent({ merchants, onMarkerPress, initialRegion }: Ma
           }}
           onPress={() => onMarkerPress(merchant)}
         >
-          <View style={[
-            styles.markerContainer,
-            { backgroundColor: getCategoryColor(merchant.category, merchant.exclusive) }
-          ]}>
+          <View
+            style={[
+              styles.markerContainer,
+              {
+                backgroundColor: getCategoryColor(
+                  merchant.category,
+                  merchant.exclusive
+                ),
+              },
+            ]}
+          >
             <Typography
               variant="caption"
               color="#FFF"
@@ -95,7 +116,12 @@ export function MapViewComponent({ merchants, onMarkerPress, initialRegion }: Ma
               {getOfferDisplayText(merchant)}
             </Typography>
             {merchant.exclusive && (
-              <IconSymbol name="crown.fill" size={12} color="#FFF" style={styles.markerIcon} />
+              <IconSymbol
+                name="crown.fill"
+                size={12}
+                color="#FFF"
+                style={styles.markerIcon}
+              />
             )}
           </View>
         </Marker>
