@@ -1,7 +1,7 @@
 
 import * as Haptics from "expo-haptics";
 import { useEffect, useMemo, useState } from "react";
-import { Animated, StatusBar, StyleSheet, View } from "react-native";
+import { Animated, StatusBar, View } from "react-native";
 
 import merchantData from "@/assets/data.json";
 import { MapViewComponent } from "@/components/map/mapView";
@@ -193,7 +193,7 @@ export default function MapScreen() {
 
   if (!isLoggedIn || !userData) {
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View className="flex-1 bg-white justify-center items-center">
         <StatusBar
           barStyle="dark-content"
           backgroundColor={colors.background}
@@ -203,7 +203,7 @@ export default function MapScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
 
       {/* Budj Header */}
@@ -225,7 +225,7 @@ export default function MapScreen() {
       />
 
       {/* Map View */}
-      <View style={styles.mapContainer}>
+      <View className="flex-1">
         <MapViewComponent
           merchants={filteredMerchants}
           onMarkerPress={handleMarkerPress}
@@ -258,17 +258,3 @@ export default function MapScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  centered: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  mapContainer: {
-    flex: 1,
-  },
-});
