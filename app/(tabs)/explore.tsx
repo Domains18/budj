@@ -1,4 +1,3 @@
-
 import * as Haptics from "expo-haptics";
 import { useEffect, useMemo, useState } from "react";
 import { Animated, StatusBar, View } from "react-native";
@@ -90,8 +89,6 @@ export default function MapScreen() {
 
   const handleBottomSheetMerchantPress = (merchant: Merchant) => {
     setSelectedMerchant(merchant);
-    // Optionally close the bottom sheet when a merchant is selected
-    // setIsBottomSheetVisible(false);
   };
 
   const handleCategoryToggle = (categoryId: string) => {

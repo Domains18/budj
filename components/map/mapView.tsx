@@ -1,5 +1,5 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Typography } from '@/components/ui/typography';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Typography } from "@/components/ui/typography";
 import { lightMapStyle } from "@/constants/map-styles";
 import { colors } from "@/constants/theme";
 import React from "react";
@@ -41,7 +41,7 @@ interface MapViewComponentProps {
 }
 
 const getCategoryColor = (category: string, exclusive?: boolean) => {
-  if (exclusive) return colors.mapMarkerSelected; // Gold for exclusive
+  if (exclusive) return colors.mapMarkerSelected;
 
   switch (category) {
     case "restaurant":
@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
+    flexDirection: "row",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
