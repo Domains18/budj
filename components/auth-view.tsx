@@ -29,12 +29,10 @@ export function AuthView() {
 
   const slideAnimation = useState(new Animated.Value(0))[0];
 
-  // Clear error when switching between login/signup
   useEffect(() => {
     clearError();
   }, [isLogin, clearError]);
 
-  // Show error alert
   useEffect(() => {
     if (error) {
       Alert.alert("Authentication Error", error.message, [
@@ -71,9 +69,7 @@ export function AuthView() {
         password: password.trim(),
         name: isLogin ? undefined : name.trim(),
       });
-      // Navigation happens automatically in the login function
     } catch (error) {
-      // Error is handled by the hook and shown via Alert
       console.error("Auth error:", error);
     }
   }, [email, password, name, isLogin, login]);
