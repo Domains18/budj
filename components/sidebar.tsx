@@ -208,6 +208,7 @@ function MenuItem({
       activeOpacity={0.7}
     >
       <View style={styles.menuItemIcon}>
+          {/* @ts-ignore */}
         <IconSymbol name={icon} size={20} color={colors.primary} />
       </View>
       <View style={styles.menuItemContent}>

@@ -1,9 +1,9 @@
-import { AuthView } from "@/components/ui/auth-view";
+import { AuthView } from "@/components/auth-view";
 import { colors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
-import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
+import "../../globals.css";
 
 export default function HomeScreen() {
   const { isLoggedIn, userData, checkLoginStatus } = useAuth();
@@ -14,7 +14,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (isLoggedIn && userData) {
-      router.replace("/explore");
+      console.log("User is logged in:", userData);
     }
   }, [isLoggedIn, userData]);
 

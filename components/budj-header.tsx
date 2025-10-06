@@ -1,16 +1,16 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { colors, spacing } from '@/constants/theme';
-import * as Haptics from 'expo-haptics';
-import React from 'react';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { colors, spacing } from "@/constants/theme";
+import * as Haptics from "expo-haptics";
+import React from "react";
 import {
-    Platform,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface BudjHeaderProps {
   onMenuPress: () => void;
@@ -19,11 +19,11 @@ interface BudjHeaderProps {
   walletBalance: string;
 }
 
-export function BudjHeader({ 
-  onMenuPress, 
+export function BudjHeader({
+  onMenuPress,
   searchQuery,
   onSearchChange,
-  walletBalance 
+  walletBalance,
 }: BudjHeaderProps) {
   const handleMenuPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -33,7 +33,7 @@ export function BudjHeader({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
+
       <View style={styles.topRow}>
         {/* Menu Button */}
         <TouchableOpacity
@@ -46,7 +46,11 @@ export function BudjHeader({
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <IconSymbol name="magnifyingglass" size={18} color={colors.textSecondary} />
+          <IconSymbol
+            name="magnifyingglass"
+            size={18}
+            color={colors.textSecondary}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Search..."
@@ -67,16 +71,16 @@ export function BudjHeader({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0,
+    backgroundColor: "#FFFFFF",
+    paddingTop: Platform.OS === "ios" ? 44 : StatusBar.currentHeight || 0,
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   menuButton: {
@@ -85,14 +89,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
   },
   searchContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: 12,
     paddingHorizontal: spacing.md,
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
   },
   balanceText: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#007AFF',
+    fontWeight: "700",
+    color: "#007AFF",
   },
 });

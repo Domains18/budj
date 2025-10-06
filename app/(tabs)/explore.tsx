@@ -1,17 +1,18 @@
 import * as Haptics from "expo-haptics";
 import { useEffect, useMemo, useState } from "react";
-import { Animated, StatusBar, View } from "react-native";
+import { Animated, StatusBar, StyleSheet, View } from "react-native";
 
 import merchantData from "@/assets/data.json";
-import { MapViewComponent } from "@/components/map/mapView";
-import { Sidebar } from "@/components/sidebar";
-import { BudjHeader } from "@/components/ui/budj-header";
-import { FilterPills } from "@/components/ui/filter-pills";
+import { BudjHeader } from "@/components/budj-header";
+import { FilterPills } from "@/components/filter-pills";
+import { MapViewComponent } from "@/components/map-view";
 import {
   MerchantCards,
   type Merchant as MerchantCardType,
-} from "@/components/ui/merchant-cards";
-import { StoreDetailsBottomSheet } from "@/components/ui/store-details-bottom-sheet";
+} from "@/components/merchant-cards";
+import { MerchantBottomSheet } from "@/components/merchantBottomSheet";
+import { Sidebar } from "@/components/sidebar";
+import { StoreDetailsBottomSheet } from "@/components/store-details-bottom-sheet";
 import { colors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -38,7 +39,7 @@ interface Merchant {
   blurhash?: string;
 }
 
-export default function MapScreen() {
+function MapScreen() {
   const [selectedMerchant, setSelectedMerchant] = useState<Merchant | null>(
     null
   );
@@ -51,6 +52,7 @@ export default function MapScreen() {
   ]);
   const [selectedOfferTypes, setSelectedOfferTypes] = useState<string[]>([]);
   const sidebarAnimation = useState(new Animated.Value(0))[0];
+  const merchantBottomSheetAnimation = useState(new Animated.Value(0))[0];
   const { isLoggedIn, userData, checkLoginStatus } = useAuth();
 
   useEffect(() => {
@@ -71,7 +73,6 @@ export default function MapScreen() {
 
   const handleMerchantSelect = (merchant: MerchantCardType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
     const fullMerchant = merchants.find((m) => m.id === merchant.id);
     if (fullMerchant) {
       setSelectedMerchant(fullMerchant);
@@ -91,9 +92,12 @@ export default function MapScreen() {
     setSelectedMerchant(merchant);
   };
 
+  const handleMerchantBottomSheetClose = () => {
+    setSelectedMerchant(null);
+  };
+
   const handleCategoryToggle = (categoryId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
     if (categoryId === "all") {
       setSelectedCategories(["all"]);
     } else {
@@ -110,7 +114,6 @@ export default function MapScreen() {
 
   const handleOfferTypeToggle = (offerTypeId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
     setSelectedOfferTypes((prev) => {
       if (prev.includes(offerTypeId)) {
         return prev.filter((id) => id !== offerTypeId);
@@ -122,9 +125,7 @@ export default function MapScreen() {
   const toggleSidebar = () => {
     const isOpening = !isSidebarVisible;
     setIsSidebarVisible(isOpening);
-
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
     Animated.spring(sidebarAnimation, {
       toValue: isOpening ? 1 : 0,
       useNativeDriver: false,
@@ -149,9 +150,9 @@ export default function MapScreen() {
 
   const categoryFilters = [
     { id: "all", label: "All" },
-    { id: "shop", label: "shop" },
-    { id: "restaurant", label: "restaurant" },
-    { id: "fitness", label: "fitness" },
+    { id: "shop", label: "Shop" },
+    { id: "restaurant", label: "Restaurant" },
+    { id: "fitness", label: "Fitness" },
   ];
 
   const offerTypeFilters = [
@@ -190,7 +191,7 @@ export default function MapScreen() {
 
   if (!isLoggedIn || !userData) {
     return (
-      <View className="flex-1 bg-white justify-center items-center">
+      <View style={styles.loadingContainer}>
         <StatusBar
           barStyle="dark-content"
           backgroundColor={colors.background}
@@ -200,10 +201,14 @@ export default function MapScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+    <View style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
 
-      {/* Budj Header */}
+      {/* Header */}
       <BudjHeader
         onMenuPress={toggleSidebar}
         searchQuery={searchQuery}
@@ -221,8 +226,8 @@ export default function MapScreen() {
         onOfferTypeToggle={handleOfferTypeToggle}
       />
 
-      {/* Map View */}
-      <View className="flex-1">
+      {/* Map View - Takes remaining space above cards */}
+      <View style={styles.mapContainer}>
         <MapViewComponent
           merchants={filteredMerchants}
           onMarkerPress={handleMarkerPress}
@@ -230,7 +235,7 @@ export default function MapScreen() {
         />
       </View>
 
-      {/* Merchant Cards at Bottom */}
+      {/* Merchant Cards - Fixed at bottom */}
       <MerchantCards
         merchants={filteredMerchants}
         onMerchantPress={handleMerchantSelect}
@@ -252,6 +257,33 @@ export default function MapScreen() {
         onClose={handleBottomSheetClose}
         onMerchantPress={handleBottomSheetMerchantPress}
       />
+
+      {/* Individual Merchant Bottom Sheet */}
+      {selectedMerchant && (
+        <MerchantBottomSheet
+          merchant={selectedMerchant}
+          slideAnimation={merchantBottomSheetAnimation}
+          onClose={handleMerchantBottomSheetClose}
+        />
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mapContainer: {
+    flex: 1,
+  },
+});
+
+export default MapScreen;

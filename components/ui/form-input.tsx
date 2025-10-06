@@ -21,7 +21,8 @@ export function FormInput({
   ...textInputProps
 }: FormInputProps) {
   return (
-    <View style={styles.container}>
+      <View style={styles.container}>
+        {/* @ts-ignore */}
       <IconSymbol name={icon} size={20} color="#999" style={styles.leftIcon} />
       <TextInput
         style={styles.input}
@@ -34,6 +35,7 @@ export function FormInput({
           onPress={onRightIconPress}
           activeOpacity={0.7}
         >
+          {/* @ts-ignore */}
           <IconSymbol name={rightIcon} size={20} color="#999" />
         </TouchableOpacity>
       )}

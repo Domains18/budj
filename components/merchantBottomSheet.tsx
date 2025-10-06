@@ -1,10 +1,16 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { NumberText, Typography } from '@/components/ui/typography';
-import { Image } from 'expo-image';
-import React from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { NumberText, Typography } from "@/components/ui/typography";
+import { Image } from "expo-image";
+import React from "react";
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
 interface Merchant {
   id: string;
@@ -19,7 +25,7 @@ interface Merchant {
   offersLeft?: number;
   offerEnd?: string;
   offers: {
-    type: 'cashback' | 'points';
+    type: "cashback" | "points";
     value: string;
     upto: string;
   }[];
@@ -35,48 +41,61 @@ interface MerchantBottomSheetProps {
   onClose: () => void;
 }
 
-export function MerchantBottomSheet({ merchant, slideAnimation, onClose }: MerchantBottomSheetProps) {
+export function MerchantBottomSheet({
+  merchant,
+  slideAnimation,
+  onClose,
+}: MerchantBottomSheetProps) {
   if (!merchant) return null;
 
   return (
-    <Animated.View style={[
-      styles.bottomSheet,
-      { bottom: slideAnimation.interpolate({
-          inputRange: [0, height],
-          outputRange: [0, -height],
-        })
-      }
-    ]}>
+    <Animated.View
+      style={[
+        styles.bottomSheet,
+        {
+          bottom: slideAnimation.interpolate({
+            inputRange: [0, height],
+            outputRange: [0, -height],
+          }),
+        },
+      ]}
+    >
       <View style={styles.bottomSheetHandle} />
-      
-      <TouchableOpacity 
-        style={styles.closeButton} 
-        onPress={onClose}
-      >
+
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <IconSymbol name="xmark" size={20} color="#666" />
       </TouchableOpacity>
 
       <View style={styles.merchantInfo}>
         <View style={styles.merchantHeader}>
           {merchant.logo && (
-            <Image 
+            <Image
               source={{ uri: merchant.logo }}
               style={styles.merchantLogo}
               placeholder={merchant.blurhash}
             />
           )}
           <View style={styles.merchantDetails}>
-            <Typography variant="h4" weight="bold" color="#333" style={styles.merchantName}>
+            <Typography
+              variant="h4"
+              weight="bold"
+              color="#333"
+              style={styles.merchantName}
+            >
               {merchant.name}
             </Typography>
-            <Typography variant="body" color="#666" style={styles.merchantAddress}>
+            <Typography
+              variant="body"
+              color="#666"
+              style={styles.merchantAddress}
+            >
               {merchant.street}
             </Typography>
             <View style={styles.merchantMeta}>
               <Typography
                 variant="bodySmall"
                 weight="semiBold"
-                color={merchant.status === 'Open' ? '#4CAF50' : '#F44336'}
+                color={merchant.status === "Open" ? "#4CAF50" : "#F44336"}
               >
                 {merchant.status}
               </Typography>
@@ -92,34 +111,47 @@ export function MerchantBottomSheet({ merchant, slideAnimation, onClose }: Merch
         </View>
 
         <View style={styles.offersContainer}>
-          <Typography variant="h5" weight="semiBold" color="#333" style={styles.offersTitle}>
+          <Typography
+            variant="h5"
+            weight="semiBold"
+            color="#333"
+            style={styles.offersTitle}
+          >
             Available Offers
           </Typography>
           {merchant.offers.map((offer, index) => (
             <View key={index} style={styles.offerCard}>
-              <IconSymbol 
-                name={offer.type === 'cashback' ? 'dollarsign.circle.fill' : 'star.fill'} 
-                size={24} 
-                color={offer.type === 'cashback' ? '#4CAF50' : '#FF9800'} 
+              <IconSymbol
+                name={
+                  offer.type === "cashback"
+                    ? "dollarsign.circle.fill"
+                    : "star.fill"
+                }
+                size={24}
+                color={offer.type === "cashback" ? "#4CAF50" : "#FF9800"}
               />
               <View style={styles.offerDetails}>
                 <Typography variant="body" weight="semiBold" color="#333">
-                  {offer.type === 'cashback' ? 'Cashback' : 'Loyalty Points'}
+                  {offer.type === "cashback" ? "Cashback" : "Loyalty Points"}
                 </Typography>
                 <Typography variant="bodySmall" color="#666">
-                  {offer.type === 'cashback' 
+                  {offer.type === "cashback"
                     ? `${offer.value}% back (up to KES ${offer.upto})`
-                    : `Earn points (up to ${offer.upto} pts)`
-                  }
+                    : `Earn points (up to ${offer.upto} pts)`}
                 </Typography>
               </View>
             </View>
           ))}
-          
+
           {merchant.exclusive && (
             <View style={styles.exclusiveTag}>
               <IconSymbol name="crown.fill" size={16} color="#FFD700" />
-              <Typography variant="body" weight="semiBold" color="#F57F17" style={styles.exclusiveText}>
+              <Typography
+                variant="body"
+                weight="semiBold"
+                color="#F57F17"
+                style={styles.exclusiveText}
+              >
                 Exclusive Offer
               </Typography>
               {merchant.offersLeft && (
@@ -137,14 +169,14 @@ export function MerchantBottomSheet({ merchant, slideAnimation, onClose }: Merch
 
 const styles = StyleSheet.create({
   bottomSheet: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     height: height * 0.7,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -154,21 +186,21 @@ const styles = StyleSheet.create({
   bottomSheetHandle: {
     width: 40,
     height: 4,
-    backgroundColor: '#DDD',
+    backgroundColor: "#DDD",
     borderRadius: 2,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 16,
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 16,
     right: 16,
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F0F0F0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F0F0F0",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1,
   },
   merchantInfo: {
@@ -176,7 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   merchantHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 24,
   },
   merchantLogo: {
@@ -195,19 +227,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   merchantMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   rating: {
     fontSize: 14,
-    color: '#333',
-    fontWeight: '600',
+    color: "#333",
+    fontWeight: "600",
   },
   offersContainer: {
     flex: 1,
@@ -216,9 +248,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   offerCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F9FA",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -228,13 +260,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   exclusiveTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E1',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF8E1",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#FFD700',
+    borderColor: "#FFD700",
   },
   exclusiveText: {
     marginLeft: 8,

@@ -246,10 +246,14 @@ function StoreCard({
         </View>
         <View className="items-end">
           <View
-            className={`px-2.5 py-1 rounded-lg ${merchant.status === "Open" ? "bg-green-50" : "bg-red-50"}`}
+            className={`px-2.5 py-1 rounded-lg ${
+              merchant.status === "Open" ? "bg-green-50" : "bg-red-50"
+            }`}
           >
             <Text
-              className={`text-xs font-semibold ${merchant.status === "Open" ? "text-green-700" : "text-red-700"}`}
+              className={`text-xs font-semibold ${
+                merchant.status === "Open" ? "text-green-700" : "text-red-700"
+              }`}
             >
               {merchant.status}
             </Text>

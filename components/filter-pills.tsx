@@ -1,13 +1,13 @@
-import { borderRadius, colors, spacing } from '@/constants/theme';
-import * as Haptics from 'expo-haptics';
-import React from 'react';
+import { borderRadius, colors, spacing } from "@/constants/theme";
+import * as Haptics from "expo-haptics";
+import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface FilterPill {
   id: string;
@@ -54,17 +54,13 @@ export function FilterPills({
           return (
             <TouchableOpacity
               key={filter.id}
-              style={[
-                styles.pill,
-                isSelected && styles.pillActive,
-              ]}
+              style={[styles.pill, isSelected && styles.pillActive]}
               onPress={() => handleCategoryPress(filter.id)}
               activeOpacity={0.7}
             >
-              <Text style={[
-                styles.pillText,
-                isSelected && styles.pillTextActive,
-              ]}>
+              <Text
+                style={[styles.pillText, isSelected && styles.pillTextActive]}
+              >
                 {filter.label}
               </Text>
             </TouchableOpacity>
@@ -93,11 +89,13 @@ export function FilterPills({
                 onPress={() => handleOfferTypePress(filter.id)}
                 activeOpacity={0.7}
               >
-                <Text style={[
-                  styles.pillText,
-                  styles.pillTextSecondary,
-                  isSelected && styles.pillTextSecondaryActive,
-                ]}>
+                <Text
+                  style={[
+                    styles.pillText,
+                    styles.pillTextSecondary,
+                    isSelected && styles.pillTextSecondaryActive,
+                  ]}
+                >
                   {filter.label}
                 </Text>
               </TouchableOpacity>
@@ -111,7 +109,7 @@ export function FilterPills({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     paddingTop: spacing.sm,
   },
   scrollContent: {
@@ -125,16 +123,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm + 2,
     borderRadius: borderRadius.full,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: colors.border,
   },
   pillActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: "#007AFF",
+    borderColor: "#007AFF",
   },
   pillSecondary: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderColor: colors.primary,
   },
   pillSecondaryActive: {
@@ -143,17 +141,17 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.text,
   },
   pillTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   pillTextSecondary: {
     color: colors.primary,
   },
   pillTextSecondaryActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 });
