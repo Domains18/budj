@@ -46,14 +46,14 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+        <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="modal"
             options={{ presentation: "modal", title: "Modal" }}
           />
         </Stack>
-        <StatusBar style="auto" />
       </ThemeProvider>
     </GestureHandlerRootView>
   );

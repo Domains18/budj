@@ -77,57 +77,65 @@ export function MapViewComponent({
   onMarkerPress,
   initialRegion,
 }: MapViewComponentProps) {
+  // return (
+  //   <MapView
+  //     provider={PROVIDER_GOOGLE}
+  //     style={styles.map}
+  //     initialRegion={initialRegion}
+  //     customMapStyle={lightMapStyle}
+  //     showsUserLocation={true}
+  //     showsMyLocationButton={false}
+  //     toolbarEnabled={false}
+  //   >
+  //     {merchants.map((merchant) => (
+  //       <Marker
+  //         key={merchant.id}
+  //         coordinate={{
+  //           latitude: merchant.latitude,
+  //           longitude: merchant.longitude,
+  //         }}
+  //         onPress={() => onMarkerPress(merchant)}
+  //       >
+  //         <View
+  //           style={[
+  //             styles.markerContainer,
+  //             {
+  //               backgroundColor: getCategoryColor(
+  //                 merchant.category,
+  //                 merchant.exclusive
+  //               ),
+  //             },
+  //           ]}
+  //         >
+  //           <Typography
+  //             variant="caption"
+  //             color="#FFF"
+  //             weight="semiBold"
+  //             style={styles.markerText}
+  //           >
+  //             {getOfferDisplayText(merchant)}
+  //           </Typography>
+  //           {merchant.exclusive && (
+  //             <IconSymbol
+  //               name="crown.fill"
+  //               size={12}
+  //               color="#FFF"
+  //               style={styles.markerIcon}
+  //             />
+  //           )}
+  //         </View>
+  //       </Marker>
+  //     ))}
+  //   </MapView>
+  // );
+
   return (
-    <MapView
-      provider={PROVIDER_GOOGLE}
-      style={styles.map}
-      initialRegion={initialRegion}
-      customMapStyle={lightMapStyle}
-      showsUserLocation={true}
-      showsMyLocationButton={false}
-      toolbarEnabled={false}
-    >
-      {merchants.map((merchant) => (
-        <Marker
-          key={merchant.id}
-          coordinate={{
-            latitude: merchant.latitude,
-            longitude: merchant.longitude,
-          }}
-          onPress={() => onMarkerPress(merchant)}
-        >
-          <View
-            style={[
-              styles.markerContainer,
-              {
-                backgroundColor: getCategoryColor(
-                  merchant.category,
-                  merchant.exclusive
-                ),
-              },
-            ]}
-          >
-            <Typography
-              variant="caption"
-              color="#FFF"
-              weight="semiBold"
-              style={styles.markerText}
-            >
-              {getOfferDisplayText(merchant)}
-            </Typography>
-            {merchant.exclusive && (
-              <IconSymbol
-                name="crown.fill"
-                size={12}
-                color="#FFF"
-                style={styles.markerIcon}
-              />
-            )}
-          </View>
-        </Marker>
-      ))}
-    </MapView>
-  );
+    <View style={styles.map}>
+      <Typography variant="h4" weight="bold" color={colors.text}>
+        Map View Placeholder
+      </Typography>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({

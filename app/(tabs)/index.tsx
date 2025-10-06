@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
-import '../../globals.css'
 
 export default function HomeScreen() {
   const { isLoggedIn, userData, checkLoginStatus } = useAuth();

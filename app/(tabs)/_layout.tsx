@@ -1,11 +1,29 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, usePathname } from "expo-router";
+import React, { useEffect, useState } from "react";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { HapticTab } from "@/components/haptic-tab";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { colors } from "@/constants/theme";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function TabLayout() {
+  const { isLoggedIn, checkLoginStatus } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    checkLoginStatus();
+    setMounted(true);
+  }, [checkLoginStatus]);
+
+  // Don't render anything until we've checked auth status
+  if (!mounted) {
+    return null;
+  }
+
+  // Hide tab bar on login screen (index route)
+  const shouldShowTabBar = isLoggedIn && pathname !== "/";
+
   return (
     <Tabs
       screenOptions={{
@@ -20,6 +38,7 @@ export default function TabLayout() {
           paddingBottom: 8,
           paddingTop: 8,
           height: 100,
+          display: shouldShowTabBar ? "flex" : "none",
         },
         tabBarLabelStyle: {
           fontSize: 12,
