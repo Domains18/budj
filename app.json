@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs location access to show nearby merchants and offers."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +22,14 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "package": "com.domains.BudjApp"
     },
     "web": {
       "output": "static",
@@ -28,6 +38,8 @@
     },
     "plugins": [
       "expo-router",
+      "@maplibre/maplibre-react-native",
+      "@maplibre/maplibre-react-native",
       [
         "expo-splash-screen",
         {

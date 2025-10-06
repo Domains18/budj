@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { IconSymbol } from "./ui/icon-symbol";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH * 0.8;
 const CARD_SPACING = 16;
 const EXPANDED_HEIGHT = 300;
@@ -147,6 +147,7 @@ export function MerchantCards({
   const containerHeight = useRef(new Animated.Value(EXPANDED_HEIGHT)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const scale = useRef(new Animated.Value(1)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
 
   // Pulsing animation for indicator
   useEffect(() => {
@@ -205,15 +206,22 @@ export function MerchantCards({
         }
       },
       onPanResponderMove: (_, gestureState) => {
-        if (!isCollapsed && gestureState.dy < 0) {
+        if (gestureState.dy < 0) {
           const clampedValue = Math.max(gestureState.dy, -120);
-          // Apply transform without using setValue to avoid conflicts
+          translateY.setValue(clampedValue);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
         Animated.spring(scale, {
           toValue: 1,
           useNativeDriver: false,
+        }).start();
+
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: false,
+          tension: 50,
+          friction: 8,
         }).start();
 
         if (!isCollapsed && gestureState.dy < -60 && gestureState.vy < -0.5) {
@@ -223,6 +231,11 @@ export function MerchantCards({
       onPanResponderTerminate: () => {
         Animated.spring(scale, {
           toValue: 1,
+          useNativeDriver: false,
+        }).start();
+
+        Animated.spring(translateY, {
+          toValue: 0,
           useNativeDriver: false,
         }).start();
       },
@@ -246,7 +259,7 @@ export function MerchantCards({
         styles.container,
         {
           height: containerHeight,
-          transform: [{ scale }],
+          transform: [{ scale }, { translateY }],
         },
       ]}
     >

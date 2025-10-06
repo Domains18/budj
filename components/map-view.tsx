@@ -1,15 +1,17 @@
+// Install: npx expo install react-native-maps
+
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Typography } from "@/components/ui/typography";
 import { colors } from "@/constants/theme";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
+  Text,
+  Platform,
 } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 interface Merchant {
   id: string;
@@ -45,23 +47,20 @@ interface MapViewComponentProps {
   };
 }
 
-const { width, height } = Dimensions.get("window");
-const ZOOM_LEVEL = 14;
-
 const getCategoryColor = (category: string, exclusive?: boolean) => {
-  if (exclusive) return "#EC4899"; // Pink for exclusive
+  if (exclusive) return "#EC4899";
 
   switch (category) {
     case "restaurant":
-      return "#6366F1"; // Indigo
+      return "#6366F1";
     case "shop":
-      return "#8B5CF6"; // Purple
+      return "#8B5CF6";
     case "fitness":
-      return "#10B981"; // Green
+      return "#10B981";
     case "arts":
-      return "#F59E0B"; // Amber
+      return "#F59E0B";
     default:
-      return "#6B7280"; // Gray
+      return "#6B7280";
   }
 };
 
@@ -80,44 +79,18 @@ const getOfferDisplayText = (merchant: Merchant) => {
   return "Offer";
 };
 
-// Generate static map URL
-const getStaticMapUrl = (
-  latitude: number,
-  longitude: number,
-  zoom: number = ZOOM_LEVEL
-) => {
-  const mapWidth = Math.floor(width);
-  const mapHeight = Math.floor(height);
-
-  return `https://staticmap.openstreetmap.de/staticmap.php?center=${latitude},${longitude}&zoom=${zoom}&size=${mapWidth}x${mapHeight}&maptype=mapnik`;
-};
-
-// Calculate marker positions
-const calculateMarkerPosition = (
-  merchantLat: number,
-  merchantLng: number,
-  centerLat: number,
-  centerLng: number,
-  zoom: number
-) => {
-  const scale = 256 * Math.pow(2, zoom);
-  const centerX = (centerLng + 180) * (scale / 360);
-  const centerY =
-    scale / 2 -
-    (scale * Math.log(Math.tan(Math.PI / 4 + (centerLat * Math.PI) / 360))) /
-      (2 * Math.PI);
-
-  const pointX = (merchantLng + 180) * (scale / 360);
-  const pointY =
-    scale / 2 -
-    (scale * Math.log(Math.tan(Math.PI / 4 + (merchantLat * Math.PI) / 360))) /
-      (2 * Math.PI);
-
-  const x = (pointX - centerX) * (width / scale) + width / 2;
-  const y = (pointY - centerY) * (height / scale) + height / 2;
-
-  return { x, y };
-};
+// Custom Map Style - Light theme
+const customMapStyle = [
+  {
+    featureType: "poi.business",
+    stylers: [{ visibility: "off" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text",
+    stylers: [{ visibility: "off" }],
+  },
+];
 
 export function MapViewComponent({
   merchants,
@@ -125,106 +98,55 @@ export function MapViewComponent({
   initialRegion,
 }: MapViewComponentProps) {
   const [selectedMerchant, setSelectedMerchant] = useState<string | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapError, setMapError] = useState(false);
+  const mapRef = useRef<MapView>(null);
 
   const handleMarkerPress = (merchant: Merchant) => {
     setSelectedMerchant(merchant.id);
     onMarkerPress(merchant);
+
+    // Animate to selected marker
+    mapRef.current?.animateToRegion(
+      {
+        latitude: merchant.latitude,
+        longitude: merchant.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      },
+      1000
+    );
   };
 
-  const mapUrl = getStaticMapUrl(
-    initialRegion.latitude,
-    initialRegion.longitude,
-    ZOOM_LEVEL
-  );
-
-  useEffect(() => {
-    // Reset error state when map URL changes
-    setMapError(false);
-  }, [mapUrl]);
+  const centerMap = () => {
+    mapRef.current?.animateToRegion(initialRegion, 1000);
+  };
 
   return (
     <View style={styles.container}>
-      {/* Loading Indicator */}
-      {!mapLoaded && !mapError && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Typography
-            variant="caption"
-            color={colors.textSecondary}
-            style={styles.loadingText}
-          >
-            Loading map...
-          </Typography>
-        </View>
-      )}
+      <MapView
+        ref={mapRef}
+        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+        style={styles.map}
+        initialRegion={initialRegion}
+        customMapStyle={customMapStyle}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        showsCompass={false}
+        toolbarEnabled={false}
+      >
+        {merchants.map((merchant) => {
+          const isSelected = selectedMerchant === merchant.id;
 
-      {/* Error State */}
-      {mapError && (
-        <View style={styles.errorContainer}>
-          <IconSymbol
-            name="exclamationmark.triangle"
-            size={48}
-            color="#EF4444"
-          />
-          <Typography variant="body" color="#EF4444" style={styles.errorText}>
-            Map failed to load
-            
-          </Typography>
-        </View>
-      )}
-
-      {/* Static Map Background */}
-      <Image
-        source={{ uri: mapUrl }}
-        style={styles.mapImage}
-        resizeMode="cover"
-        onLoad={() => {
-          setMapLoaded(true);
-          setMapError(false);
-        }}
-        onError={() => {
-          setMapError(true);
-          setMapLoaded(false);
-        }}
-      />
-
-      {/* Overlay Markers */}
-      {mapLoaded && merchants.length > 0 && (
-        <View style={styles.markersContainer}>
-          {merchants.map((merchant) => {
-            const position = calculateMarkerPosition(
-              merchant.latitude,
-              merchant.longitude,
-              initialRegion.latitude,
-              initialRegion.longitude,
-              ZOOM_LEVEL
-            );
-
-            const isVisible =
-              position.x >= 0 &&
-              position.x <= width &&
-              position.y >= 0 &&
-              position.y <= height;
-
-            if (!isVisible) return null;
-
-            const isSelected = selectedMerchant === merchant.id;
-
-            return (
-              <TouchableOpacity
-                key={merchant.id}
-                style={[
-                  styles.markerWrapper,
-                  {
-                    left: position.x - 40,
-                    top: position.y - 30,
-                  },
-                ]}
-                onPress={() => handleMarkerPress(merchant)}
-                activeOpacity={0.7}
-              >
+          return (
+            <Marker
+              key={merchant.id}
+              coordinate={{
+                latitude: merchant.latitude,
+                longitude: merchant.longitude,
+              }}
+              onPress={() => handleMarkerPress(merchant)}
+              tracksViewChanges={false}
+            >
+              <View style={styles.markerWrapper}>
                 <View
                   style={[
                     styles.markerContainer,
@@ -237,37 +159,43 @@ export function MapViewComponent({
                     isSelected && styles.selectedMarker,
                   ]}
                 >
-                  <Typography
-                    variant="caption"
-                    color="#FFF"
-                    weight="bold"
-                    style={styles.markerText}
-                  >
+                  <Text style={styles.markerText}>
                     {getOfferDisplayText(merchant)}
-                  </Typography>
+                  </Text>
                   {merchant.exclusive && (
                     <View style={styles.crownWrapper}>
-                      <IconSymbol name="crown.fill" size={10} color="#FFD700" />
+                      <Text style={styles.crownIcon}>👑</Text>
                     </View>
                   )}
                 </View>
                 <View
-                  style={[styles.markerPin, isSelected && styles.selectedPin]}
+                  style={[
+                    styles.markerPin,
+                    {
+                      borderTopColor: getCategoryColor(
+                        merchant.category,
+                        merchant.exclusive
+                      ),
+                    },
+                    isSelected && styles.selectedPin,
+                  ]}
                 />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
-
-      {/* User Location Indicator */}
-      <View style={styles.userLocationIndicator}>
-        <View style={styles.userLocationPulse} />
-        <View style={styles.userLocationDot} />
-      </View>
+              </View>
+            </Marker>
+          );
+        })}
+      </MapView>
 
       {/* Map Controls */}
       <View style={styles.mapControls}>
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={centerMap}
+          activeOpacity={0.7}
+        >
+          <IconSymbol name="location.fill" size={20} color={colors.primary} />
+        </TouchableOpacity>
+
         <View style={styles.merchantCount}>
           <IconSymbol
             name="mappin.and.ellipse"
@@ -292,51 +220,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E5E7EB",
-    overflow: "hidden",
   },
-  mapImage: {
-    width: "100%",
-    height: "100%",
+  map: {
+    flex: 1,
   },
-  loadingContainer: {
+  mapControls: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 16,
+    right: 16,
+    gap: 12,
+  },
+  controlButton: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F3F4F6",
-    zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  loadingText: {
-    marginTop: 12,
-  },
-  errorContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center",
+  merchantCount: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FEF2F2",
-    zIndex: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  errorText: {
-    marginTop: 12,
-  },
-  markersContainer: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
+  countText: {
+    marginLeft: 6,
+    fontSize: 14,
   },
   markerWrapper: {
-    position: "absolute",
     alignItems: "center",
-    zIndex: 2,
   },
   markerContainer: {
     paddingHorizontal: 12,
@@ -362,10 +287,15 @@ const styles = StyleSheet.create({
   },
   markerText: {
     fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
   crownWrapper: {
     marginLeft: 4,
+  },
+  crownIcon: {
+    fontSize: 10,
   },
   markerPin: {
     width: 0,
@@ -377,65 +307,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 10,
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
-    borderTopColor: "rgba(0, 0, 0, 0.3)",
     marginTop: -2,
   },
   selectedPin: {
     borderTopWidth: 12,
     borderLeftWidth: 7,
     borderRightWidth: 7,
-  },
-  userLocationIndicator: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -20,
-    marginLeft: -20,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  userLocationPulse: {
-    position: "absolute",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(66, 133, 244, 0.15)",
-  },
-  userLocationDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#4285F4",
-    borderWidth: 3,
-    borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  mapControls: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-  },
-  merchantCount: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  countText: {
-    marginLeft: 6,
-    fontSize: 14,
   },
 });
