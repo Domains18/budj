@@ -1,5 +1,6 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { borderRadius, colors, shadows, spacing } from "@/constants/theme";
+import { useAuth } from "@/hooks/useAuth";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -28,9 +29,17 @@ export function Sidebar({
   slideAnimation,
   userName,
 }: SidebarProps) {
+  const { logout } = useAuth();
+
   const handleClose = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onClose();
+  };
+
+  const handleLogout = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onClose(); // Close sidebar first
+    await logout(); // Then logout
   };
 
   if (!isVisible) return null;
@@ -175,7 +184,11 @@ export function Sidebar({
             </View>
 
             {/* Sign Out */}
-            <TouchableOpacity style={styles.signOutButton} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.signOutButton}
+              activeOpacity={0.7}
+              onPress={handleLogout}
+            >
               <IconSymbol
                 name="arrow.backward.square"
                 size={20}

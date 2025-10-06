@@ -3,9 +3,9 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { borderRadius, colors, shadows, spacing } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { BlurView } from "expo-blur";
-import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useState } from "react";
+import * as Haptics from "expo-haptics";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Animated,
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 
 export function AuthView() {
@@ -24,13 +25,28 @@ export function AuthView() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error, clearError } = useAuth();
 
   const slideAnimation = useState(new Animated.Value(0))[0];
+
+  // Clear error when switching between login/signup
+  useEffect(() => {
+    clearError();
+  }, [isLogin, clearError]);
+
+  // Show error alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Authentication Error", error.message, [
+        { text: "OK", onPress: clearError },
+      ]);
+    }
+  }, [error, clearError]);
 
   const handleToggle = useCallback(() => {
     const toValue = isLogin ? 1 : 0;
     setIsLogin(!isLogin);
+    clearError();
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -40,15 +56,14 @@ export function AuthView() {
       tension: 100,
       friction: 8,
     }).start();
-  }, [isLogin, slideAnimation]);
+  }, [isLogin, slideAnimation, clearError]);
 
   const handleSubmit = useCallback(async () => {
     if (!email.trim() || !password.trim() || (!isLogin && !name.trim())) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Validation Error", "Please fill in all required fields");
       return;
     }
-
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
       await login({
@@ -56,9 +71,10 @@ export function AuthView() {
         password: password.trim(),
         name: isLogin ? undefined : name.trim(),
       });
+      // Navigation happens automatically in the login function
     } catch (error) {
+      // Error is handled by the hook and shown via Alert
       console.error("Auth error:", error);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   }, [email, password, name, isLogin, login]);
 
@@ -70,7 +86,6 @@ export function AuthView() {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
 
-      {/* Background with gradient */}
       <LinearGradient
         colors={[colors.background, colors.surface, colors.primaryLight + "20"]}
         style={styles.backgroundGradient}
@@ -86,7 +101,6 @@ export function AuthView() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Section */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <LinearGradient
@@ -103,14 +117,12 @@ export function AuthView() {
             </Text>
           </View>
 
-          {/* Auth Form Card */}
           <View style={styles.formCard}>
             <BlurView intensity={20} tint="light" style={styles.cardBlur}>
               <LinearGradient
                 colors={[colors.background + "F0", colors.surface + "F0"]}
                 style={styles.cardGradient}
               >
-                {/* Toggle Buttons */}
                 <View style={styles.toggleContainer}>
                   <TouchableOpacity
                     style={[
@@ -119,6 +131,7 @@ export function AuthView() {
                     ]}
                     onPress={() => !isLogin && handleToggle()}
                     activeOpacity={0.8}
+                    disabled={isLoading}
                   >
                     {isLogin && (
                       <LinearGradient
@@ -143,6 +156,7 @@ export function AuthView() {
                     ]}
                     onPress={() => isLogin && handleToggle()}
                     activeOpacity={0.8}
+                    disabled={isLoading}
                   >
                     {!isLogin && (
                       <LinearGradient
@@ -161,7 +175,6 @@ export function AuthView() {
                   </TouchableOpacity>
                 </View>
 
-                {/* Form Fields */}
                 <View style={styles.formSection}>
                   {!isLogin && (
                     <Animated.View
@@ -215,6 +228,7 @@ export function AuthView() {
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
                         style={styles.passwordToggle}
+                        disabled={isLoading}
                       >
                         <IconSymbol
                           name={showPassword ? "eye.slash.fill" : "eye.fill"}
@@ -226,11 +240,10 @@ export function AuthView() {
                   </View>
                 </View>
 
-                {/* Submit Button */}
                 <TouchableOpacity
                   style={[
                     styles.submitButton,
-                    !isFormValid && styles.submitButtonDisabled,
+                    (!isFormValid || isLoading) && styles.submitButtonDisabled,
                   ]}
                   onPress={handleSubmit}
                   disabled={!isFormValid || isLoading}
@@ -238,7 +251,7 @@ export function AuthView() {
                 >
                   <LinearGradient
                     colors={
-                      isFormValid
+                      isFormValid && !isLoading
                         ? [colors.gradientStart, colors.gradientEnd]
                         : [colors.textTertiary, colors.textTertiary]
                     }
@@ -270,7 +283,6 @@ export function AuthView() {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                {/* Features Preview */}
                 <View style={styles.featuresContainer}>
                   <Text style={styles.featuresTitle}>Why choose Budj?</Text>
                   <View style={styles.featuresList}>

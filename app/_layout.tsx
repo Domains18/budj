@@ -8,7 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { View } from "react-native";
-import '../globals.css';
+import "../globals.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -30,7 +30,6 @@ export default function RootLayout() {
       }
     };
 
-    // Small delay to ensure the app is ready
     const timer = setTimeout(hideSplash, 100);
     return () => clearTimeout(timer);
   }, []);
@@ -39,6 +38,7 @@ export default function RootLayout() {
     <View style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
+          <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="modal"
